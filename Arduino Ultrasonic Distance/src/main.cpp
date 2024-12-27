@@ -13,9 +13,9 @@ int Relay1 = 7;        // Relay 1 pin
 int Relay2 = 6;        // Relay 2 pin
 
 // Distance thresholds in millimeters for relay control
-int Critical = 127;    // Critical threshold 5"
-int Danger = 191;      // Danger threshold 7.5"
-int Warning = 254;     // Warning threshold 10"
+int Critical = 25;    // Critical threshold 2"
+int Danger = 50;      // Danger threshold 3"
+int Warning = 75;     // Warning threshold 4"
 
 // Analog voltage sensing configuration
 const int analogPin = A0;      // Analog pin for voltage divider
