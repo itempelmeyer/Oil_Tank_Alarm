@@ -78,6 +78,14 @@ void displayStartupDelay(unsigned long elapsedTime) {
   lcd.print("Wait ");
   lcd.print((startupDelay - elapsedTime) / 1000 + 1);
   lcd.print("s   ");
+
+  if ((startupDelay - elapsedTime) < 100 && (startupDelay - elapsedTime) >= 0) {
+    lcd.setCursor(0, 0);
+    lcd.print("                    ");
+    lcd.setCursor(0, 1);
+    lcd.print("                    ");
+  }
+  
 }
 
 void updateVoltage() {
@@ -220,8 +228,6 @@ void updateDisplay(float clearanceMM, float clearanceInches, float voltage, floa
     lcd.setCursor(0, 0);
     lcd.print("Batt:");
     lcd.setCursor(5, 0);
-    lcd.print("           ");
-    lcd.setCursor(5, 0);
     lcd.print(voltage, 1);
     lcd.setCursor(9, 0);
     lcd.print("V");
@@ -235,8 +241,6 @@ void updateDisplay(float clearanceMM, float clearanceInches, float voltage, floa
 
     lcd.setCursor(0, 1);
     lcd.print("Clearance:");
-    lcd.setCursor(10, 1);
-    lcd.print("      ");
     lcd.setCursor(10, 1);
     lcd.print(clearanceInches, 1);
     lcd.setCursor(14, 1);
