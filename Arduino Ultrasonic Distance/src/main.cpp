@@ -120,24 +120,60 @@ void processUltrasonicData() {
 }
 
 void updateRelays() {
-  if (averageClearance >= Warning) {
-    digitalWrite(Relay1, HIGH);
-    digitalWrite(Relay2, HIGH);
-    Stage = 1;
-  } else if (averageClearance < Warning && averageClearance >= Danger) {
-    digitalWrite(Relay1, LOW);
-    digitalWrite(Relay2, HIGH);
-    Stage = 2;
-  } else if (averageClearance < Danger && averageClearance >= Critical) {
-    digitalWrite(Relay1, HIGH);
-    digitalWrite(Relay2, LOW);
-    Stage = 3;
-  } else if (averageClearance < Critical) {
-    digitalWrite(Relay1, LOW);
-    digitalWrite(Relay2, LOW);
-    Stage = 4;
-  }
+    unsigned long currentTime = millis();
+
+    // Check if averageClearance < Critical
+    if (averageClearance < Critical) {
+        if (belowCriticalStartTime == 0) {
+            // Start the timer if it's the first time below Critical
+            belowCriticalStartTime = currentTime;
+        } else if (currentTime - belowCriticalStartTime >= 2500 && !state5Latched) {
+            // Latch State 5 if below Critical for 3 seconds
+            state5Latched = true;
+            state5LatchTime = currentTime;
+            Serial.println("State 5 Latched");
+        }
+    } else {
+        // Reset the timer if clearance is not below Critical
+        belowCriticalStartTime = 0;
+    }
+
+    // Handle latched State 5
+    if (state5Latched) {
+        if (currentTime - state5LatchTime < 60000) {
+            // Remain in State 5 for 21 seconds
+            digitalWrite(Relay1, LOW);
+            digitalWrite(Relay2, LOW);
+            Stage = 5;
+            return; // Prevent transitions to other states
+        } else {
+            // Allow other state transitions after 21 seconds
+            state5Latched = false;
+            belowCriticalStartTime = 0; // Reset belowCritical tracking
+            Serial.println("State 5 Unlatched");
+        }
+    }
+
+    // Normal state transitions
+    if (averageClearance >= Warning) {
+        digitalWrite(Relay1, HIGH);
+        digitalWrite(Relay2, HIGH);
+        Stage = 1;
+    } else if (averageClearance < Warning && averageClearance >= Danger) {
+        digitalWrite(Relay1, LOW);
+        digitalWrite(Relay2, HIGH);
+        Stage = 2;
+    } else if (averageClearance < Danger && averageClearance >= Critical) {
+        digitalWrite(Relay1, HIGH);
+        digitalWrite(Relay2, LOW);
+        Stage = 3;
+    } else if (averageClearance < Critical) {
+        digitalWrite(Relay1, LOW);
+        digitalWrite(Relay2, LOW);
+        Stage = 4;
+    }
 }
+
 
 void outputToSerialMonitor() {
   unsigned long elapsedTime = millis() - startupTime;

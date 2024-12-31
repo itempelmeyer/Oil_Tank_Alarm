@@ -5,9 +5,9 @@ int Relay1 = 7;        // Relay 1 pin
 int Relay2 = 6;        // Relay 2 pin
 
 // Distance thresholds in millimeters for relay control
-int Critical = 25;    // Critical threshold 2"
-int Danger = 50;      // Danger threshold 3"
-int Warning = 75;     // Warning threshold 4"
+int Critical = 50;    // Critical threshold 2"
+int Danger = 75;      // Danger threshold 3"
+int Warning = 100;     // Warning threshold 4"
 
 // Analog voltage sensing configuration
 const int analogPin = A0;      // Analog pin for voltage divider
@@ -66,3 +66,7 @@ byte OR[] = {
 
 float clearanceMM;
 int Stage = 0;
+
+unsigned long belowCriticalStartTime = 0; // Start time when averageClearance < Critical
+bool state5Latched = false;              // Whether State 5 is latched
+unsigned long state5LatchTime = 0;       // Time when State 5 was latched
